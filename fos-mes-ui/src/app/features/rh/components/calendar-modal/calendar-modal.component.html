@@ -1,0 +1,53 @@
+<div class="calendar-container">
+  <div class="calendar-section">
+    <div class="calendar-header">
+      <h2>{{ currentMonth }} {{ currentYear }}</h2>
+      <button class="new-event-btn" (click)="openEventModal()">
+        <i class="fas fa-plus"></i> New Event
+      </button>
+    </div>
+    <div class="calendar-grid">
+      <div class="week-number-header">Week</div>
+      <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+      <ng-container *ngFor="let week of calendarWeeks; let i = index">
+        <div class="week-number">{{ getWeekNumber(week[0]) }}</div>
+        <div *ngFor="let date of week" [ngClass]="{'calendar-day': true, 'current-day': isCurrentDay(date)}"
+          (click)="selectDate(date)">
+          {{ date.getDate() }}
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="events-section">
+    <button class="close-calendar-btn" (click)="closeCalendar()">
+      <i class='bx bx-x'></i>
+    </button>
+    <h3>Events for {{ selectedDate | date:'mediumDate' }}</h3>
+
+    <div class="events-list">
+      <div *ngFor="let event of selectedDateEvents" class="event-item" (click)="openEventDetails(event)">
+        <div class="event-time">{{ event.time }}</div>
+        <div class="event-details">
+          <h4>{{ event.title }}</h4>
+          <p>{{ event.location }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" [class.show-modal]="showModal">
+    <div class="modal-content">
+      <h3>{{ editingEvent ? 'Edit Event' : 'New Event' }}</h3>
+      <form (ngSubmit)="saveEvent()" #eventForm="ngForm">
+        <input type="text" [(ngModel)]="newEvent.title" name="title" placeholder="Event Title" required>
+        <input type="time" [(ngModel)]="newEvent.time" name="time" required>
+        <input type="text" [(ngModel)]="newEvent.location" name="location" placeholder="Location">
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-sub" [disabled]="!eventForm.valid">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+/* filter.component.css */
+.filters select {
+  margin-right: 10px;
+  padding: 5px;
+}

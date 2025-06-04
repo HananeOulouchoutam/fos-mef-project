@@ -1,0 +1,262 @@
+<div class="table-data">
+    <div class="order" *ngIf="!showForm && !selectedClient">
+        <div class="head">
+            <h1>
+                Nos Clients
+                <button class="btn-download" (click)="!isDownloading && downloadExcel()"
+                    [class.disabled]="isDownloading" [attr.aria-disabled]="isDownloading">
+                    <i class="bx" [ngClass]="{
+        'bxs-cloud-download': !isDownloading,
+        'bx-loader-circle bx-spin': isDownloading
+      }"></i>
+                </button>
+            </h1>
+
+            <div class="head-right">
+                <div *ngIf="showSearch" class="search-bar mt-2">
+                <input type="text" class="form-control" placeholder="Rechercher un employé..." [(ngModel)]="searchTerm"
+                    (keyup.enter)="searchEmployees()" />
+            </div>
+
+            <i [class]="'bx ' + (showSearch ? 'bx-x' : 'bx-search')" (click)="toggleSearchBar()"
+                style="cursor: pointer"></i>
+
+            <button class="btn btn-add" (click)="openForm()">
+                <i class="bx bx-plus"></i> Ajouter
+            </button>
+            </div>
+        </div>
+
+
+        <div *ngIf="clients.length === 0" class="text-center text-muted my-4">
+            Aucun client trouvé.
+        </div>
+
+        <table *ngIf="clients.length > 0">
+            <thead>
+                <tr>
+                    <th>Nom Complet</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let client of clients">
+                    <td class="fullName">
+                        <img [src]="client.imageUrl ? getImageUrl(client.imageUrl) : 'assets/images/default-avatar.png'"
+                            alt="Profile" />
+                        <p>{{ client.firstName }} {{ client.lastName }}</p>
+                    </td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phoneNumber }}</td>
+                    <td>
+                        <span [ngClass]="{
+                                'active-cli': client.status === 'ACTIVE',
+                                'non-active': client.status !== 'ACTIVE'
+                            }">
+                            {{ client.status }}
+                        </span>
+                    <td class="position-relative">
+                        <div class="dropdown">
+                            <i class="bx bx-dots-vertical-rounded" style="cursor: pointer;" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-expanded="false"></i>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center"
+                                        (click)="showDetails(client)">
+                                        <i class='bx bx-info-circle me-2'></i>
+                                        Détails
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center"
+                                        (click)="editClient(client)">
+                                        <i class='bx bx-pencil me-2'></i>
+                                        Modifier
+                                    </button>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center text-danger">
+                                        <i class='bx bx-trash me-2'></i>
+                                        Supprimer
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
+
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination" *ngIf="clients.length > 0">
+            <button class="arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0">
+                <i class="bx bx-chevrons-left"></i>
+            </button>
+
+            <!-- Dynamically generate page numbers -->
+            <button *ngFor="let page of pageNumbers" [class.active]="currentPage === page" class="page"
+                (click)="changePage(page)">
+                {{ page + 1 }}
+            </button>
+
+            <button class="arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
+                <i class="bx bx-chevrons-right"></i>
+            </button>
+        </div>
+
+
+
+    </div>
+
+
+    <!-- Div of add or edit starts  -->
+    <!-- Formulaire intégré -->
+    <div *ngIf="showForm" class="form-container">
+        <h4>{{ isEditMode ? 'Modifier un employé' : 'Nouveau employé' }}</h4>
+        <ul class="breadcrumb">
+            <li>
+                <a href="/rh">Dashboard</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a class="active" href="rh/clients">Clients</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a>{{ isEditMode ? 'Modifier' : 'Nouveau' }}</a>
+            </li>
+
+        </ul>
+        <form #form="ngForm" (ngSubmit)="submitForm(form)" class="form-content">
+            <div>
+                <label for="firstName" class="form-label">Prénom</label>
+                <input type="text" class="form-control" id="firstName" name="firstName"
+                    [(ngModel)]="newClient.firstName" required #firstName="ngModel" />
+                <div class="text-danger mt-1" *ngIf="form.submitted && firstName.invalid">
+                    Le prénom est requis.
+                </div>
+            </div>
+
+            <div>
+                <label for="lastName" class="form-label">Nom</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" [(ngModel)]="newClient.lastName"
+                    required #lastName="ngModel" />
+                <div class="text-danger mt-1" *ngIf="form.submitted && lastName.invalid">
+                    Le nom est requis.
+                </div>
+            </div>
+
+            <div>
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" [(ngModel)]="newClient.email" required
+                    email #email="ngModel" />
+                <div class="text-danger mt-1" *ngIf="form.submitted && email.errors">
+                    <span *ngIf="email.errors['required']">L'email est requis.</span>
+                    <span *ngIf="email.errors['email']">Format d'email invalide.</span>
+                </div>
+            </div>
+
+            <div>
+                <label for="phone" class="form-label">Téléphone</label>
+                <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="newClient.phoneNumber"
+                    required #phone="ngModel" />
+                <div class="text-danger mt-1" *ngIf="form.submitted && phone.invalid">
+                    Le numéro de téléphone est requis.
+                </div>
+            </div>
+
+
+
+            <div style="grid-column: span 2; display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-add">
+                    {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+                </button>
+                <button type="button" class="btn btn-clos" (click)="cancelForm()">Annuler</button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Div of Add or edit ends  -->
+
+
+
+
+    <!-- Toast Bootstrap -->
+    <div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+        aria-atomic="true" data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
+        <div class="d-flex">
+            <div class="toast-body">
+                Action réussie !
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+
+
+    <!-- Details of client starts -->
+    <div *ngIf="selectedClient" class="details-container">
+
+        <!-- Bouton Retour -->
+        <button (click)="closeDetails()" class="btn-back">
+            ← Retour
+        </button>
+
+        <!-- Titre -->
+        <h3 class="title">Détails du client</h3>
+
+        <!-- Breadcrumb simple -->
+        <ul class="breadcrumb">
+            <li><a href="/">Dashboard</a></li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li><a class="active" href="#">Clients</a></li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li><a>Détails</a></li>
+        </ul>
+
+        <div class="details-content">
+            <!-- Image -->
+            <div class="photo-wrapper">
+                <img *ngIf="selectedClient.imageUrl; else defaultClientImage"
+                    [src]="getImageUrl(selectedClient.imageUrl)" alt="Photo Client" class="photo" />
+                <ng-template #defaultClientImage>
+                    <img src="assets/default-avatar.png" alt="Photo par défaut" class="photo" />
+                </ng-template>
+            </div>
+
+            <!-- Infos -->
+            <div class="info-wrapper">
+                <h4>{{ selectedClient.firstName }} {{ selectedClient.lastName }}</h4>
+                <p><strong>Email :</strong> {{ selectedClient.email }}</p>
+                <p><strong>Téléphone :</strong> {{ selectedClient.phoneNumber }}</p>
+                <!-- <p><strong>Projet :</strong> {{ selectedClient.projectId }}</p>
+                <p><strong>Rapport :</strong> {{ selectedClient.report }}</p> -->
+                <!-- Ajoute ici d'autres champs spécifiques client -->
+            </div>
+
+            <!-- Documents -->
+            <div class="docs-wrapper">
+                <h5>Documents Client</h5>
+                <ul>
+                    <li>
+                        <i class="bx bxs-file-pdf pdf-icon"></i> Contrat
+                        <a [href]="'http://localhost:8082/api/clients/contract/contract_' + getClientFullNameLowercase() + '.pdf'"
+                            target="_blank" class="link-pdf">Voir PDF</a>
+                    </li>
+                    <!-- Ajoute d'autres documents si nécessaire -->
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Details of client ends  -->
+
+</div>

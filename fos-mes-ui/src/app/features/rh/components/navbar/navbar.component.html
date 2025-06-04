@@ -1,0 +1,67 @@
+<nav>
+    <!-- <i class='bx bx-menu'></i> -->
+    <!-- <form action="#">
+        <div class="form-input">
+            <input type="search" placeholder="Search...">
+            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+        </div>
+    </form> -->
+    <input type="checkbox" id="switch-mode" hidden>
+    <!-- <a href="#" class="notification">
+          <i class='bx bxs-bell'></i>
+          <span class="num">8</span>
+      </a> -->
+
+    <div class="dropdown dropdown-notification">
+        <a href="#" class="notification dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class='bx bxs-bell'></i>
+            <span class="num badge bg-danger">8</span>
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end p-2" style="width: 300px; max-height: 400px; overflow-y: auto;">
+            <li>
+                <h6 class="dropdown-header">Notifications</h6>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li>
+                <a class="dropdown-item" href="#">
+                    <strong>Evaluation Deadline</strong><br>
+                    <small>Marketing 101, Video Assignment</small>
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="#">
+                    <strong>New Message</strong><br>
+                    <small>You’ve received a new message</small>
+                </a>
+            </li>
+
+            <!-- Ajoute d'autres <li> ici si nécessaire -->
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item text-center text-primary" href="#">Voir toutes les notifications</a></li>
+        </ul>
+    </div>
+
+
+
+    <li class="nav-item dropdown">
+        <a class="profile nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <img src="assets/images/profil.jpg">
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" (click)="logout()">Logout</a></li>
+            <li><a class="dropdown-item" href="#">profile</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
+        </ul>
+    </li>
+</nav>

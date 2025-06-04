@@ -1,0 +1,341 @@
+<div class="container-fluid  py-3 px-4 mt-3 rounded d-flex justify-content-between align-items-center">
+    <div class="d-flex flex-column" *ngIf="!showPhaseForm">
+        <h4 class="mb-0 fw-bold">{{ project.title }}</h4>
+        <small class="text-muted">{{ project.description }}</small>
+    </div>
+
+    <div class="d-flex flex-column text-end me-4" *ngIf="!showPhaseForm">
+        <small class="text-muted fw-semibold">
+            Durée estimée : {{ project.duration }} mois
+        </small>
+
+    </div>
+
+    <div class="d-flex align-items-center position-relative" (mouseenter)="showHover = true"
+        (mouseleave)="showHover = false" *ngIf="!showPhaseForm">
+
+        <!-- Avatars réduits -->
+        <img *ngIf="project.client"
+            [src]="project.client.imageUrl ? getClientImageUrl(project.client.imageUrl) : 'assets/default-avatar.png'"
+            alt="Client" class="rounded-circle border border-white me-n2" width="32" height="32">
+
+        <ng-container *ngFor="let member of project.team.slice(0, 2)">
+            <img [src]="member.imageUrl ? getImageUrl(member.imageUrl) : 'assets/default-avatar.png'"
+                class="rounded-circle border border-white me-n2" width="32" height="32" alt="Membre de l'équipe">
+        </ng-container>
+
+        <div class="avatar-circle d-flex justify-content-center align-items-center">
+            <span class="fs-4 text-secondary">+</span>
+        </div>
+
+        <!-- Liste hover -->
+        <div class="hover-list position-absolute bg-white border rounded shadow p-2" *ngIf="showHover"
+            style="top: 100%; right: 0; z-index: 10; width: 200px;">
+
+            <div *ngIf="project.client" class="d-flex align-items-center mb-2">
+                <img [src]="project.client.imageUrl ? getClientImageUrl(project.client.imageUrl) : 'assets/default-avatar.png'"
+                    class="rounded-circle me-2" width="40" height="40" alt="Client">
+                <span>{{ project.client.firstName }} {{ project.client.lastName }}</span>
+            </div>
+
+            <div *ngFor="let member of project.team" class="d-flex align-items-center mb-2">
+                <img [src]="member.imageUrl ? getImageUrl(member.imageUrl) : 'assets/default-avatar.png'"
+                    class="rounded-circle me-2" width="40" height="40" alt="Membre de l'équipe">
+                <span>{{ member.firstName }} {{ member.lastName }}</span>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+<div class="container-fluid  py-4 px-3" *ngIf="!showPhaseForm">
+    <div class="d-flex justify-content-end align-items-center mb-4">
+        <button class="btn shadow-sm fw-semibold btn-add" (click)="openCreatePhaseForm()">Créer Phase</button>
+    </div>
+
+    <div class="row">
+        <!-- Column: Backlog -->
+        <div class="col-md-3">
+            <h5 class="fw-bold">Backlog <span class="dropdown-toggle text-muted"></span></h5>
+            <ng-container *ngFor="let phase of project?.phases">
+                <ng-container *ngIf="phase.status === 'NOT_STARTED'">
+                    <div class="task-card position-relative p-3">
+                        <h6 class="fw-bold">{{ phase.title }}</h6>
+                        <div class="dropdown position-absolute top-0 end-0 m-2">
+                            <button class="btn btn-sm btn-light p-1" type="button" id="dropdownMenuButton-{{phase.id}}"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions"
+                                style="background-color: transparent; border: none;">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                [attr.aria-labelledby]="'dropdownMenuButton-' + phase.id">
+                                <li><a class="dropdown-item" href="#"
+                                        (click)="onEditPhase(phase); $event.preventDefault()">Modifier</a></li>
+                                <li><a class="dropdown-item text-danger" href="#"
+                                        (click)="onDeletePhase(phase); $event.preventDefault(); $event.stopPropagation()">
+                                        Supprimer
+                                    </a>
+                            </ul>
+                        </div>
+
+                        <div class="text-muted">{{phase.type}} <span class="dot bg-pink"></span></div>
+                        <div class="text-muted">{{ phase.description }}</div>
+                        <div class="task-footer d-flex align-items-center justify-content-between mt-3">
+                            <span class="text-muted small">{{ phase.endDate }}</span>
+                            <span class="text-muted small">{{ phase.budget | currency:'MAD':'symbol':'1.0-0':'fr-MA'
+                                }}</span>
+
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+        <!-- Column: In Progress -->
+        <div class="col-md-3">
+            <h5 class="fw-bold">In Progress <span class="dropdown-toggle text-muted"></span></h5>
+            <ng-container *ngFor="let phase of project?.phases">
+                <ng-container *ngIf="phase.status === 'IN_PROGRESS'">
+                    <div class="task-card position-relative p-3">
+                        <h6 class="fw-bold">{{ phase.title }}</h6>
+                        <div class="dropdown position-absolute top-0 end-0 m-2">
+                            <button class="btn btn-sm btn-light p-1" type="button" id="dropdownMenuButton-{{phase.id}}"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                [attr.aria-labelledby]="'dropdownMenuButton-' + phase.id">
+                                <li><a class="dropdown-item" href="#"
+                                        (click)="onEditPhase(phase); $event.preventDefault()">Modifier</a></li>
+                                <li><a class="dropdown-item text-danger" href="#"
+                                        (click)="onDeletePhase(phase); $event.preventDefault(); $event.stopPropagation()">
+                                        Supprimer
+                                    </a>
+                            </ul>
+                        </div>
+
+                        <div class="text-muted">{{phase.type}} <span class="dot bg-pink"></span></div>
+                        <div class="text-muted">{{ phase.description }}</div>
+                        <div class="task-footer d-flex align-items-center justify-content-between mt-3">
+                            <span class="text-muted small">{{ phase.endDate }}</span>
+                            <span class="text-muted small">{{ phase.budget | currency:'MAD':'symbol':'1.0-0':'fr-MA'
+                                }}</span>
+
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+        <!-- Column: Review -->
+        <div class="col-md-3">
+            <h5 class="fw-bold">Review <span class="dropdown-toggle text-muted"></span></h5>
+            <ng-container *ngFor="let phase of project?.phases">
+                <ng-container *ngIf="phase.status === 'REVIEW'">
+                    <div class="task-card position-relative p-3">
+                        <h6 class="fw-bold">{{ phase.title }}</h6>
+                        <div class="dropdown position-absolute top-0 end-0 m-2">
+                            <button class="btn btn-sm btn-light p-1" type="button" id="dropdownMenuButton-{{phase.id}}"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                [attr.aria-labelledby]="'dropdownMenuButton-' + phase.id">
+                                <li><a class="dropdown-item" href="#"
+                                        (click)="onEditPhase(phase); $event.preventDefault()">Modifier</a></li>
+                                <li><a class="dropdown-item text-danger" href="#"
+                                        (click)="onDeletePhase(phase); $event.preventDefault(); $event.stopPropagation()">
+                                        Supprimer
+                                    </a>
+                            </ul>
+                        </div>
+
+                        <div class="text-muted">{{phase.type}} <span class="dot bg-pink"></span></div>
+                        <div class="text-muted">{{ phase.description }}</div>
+                        <div class="task-footer d-flex align-items-center justify-content-between mt-3">
+                            <span class="text-muted small">{{ phase.endDate }}</span>
+                            <span class="text-muted small">{{ phase.budget | currency:'MAD':'symbol':'1.0-0':'fr-MA'
+                                }}</span>
+
+                        </div>
+
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+        <!-- Column: Completed -->
+        <div class="col-md-3">
+            <h5 class="fw-bold">Completed <span class="dropdown-toggle text-muted"></span></h5>
+            <ng-container *ngFor="let phase of project?.phases">
+                <ng-container *ngIf="phase.status === 'COMPLETED'">
+                    <div class="task-card position-relative p-3">
+                        <h6 class="fw-bold">{{ phase.title }}</h6>
+                        <div class="dropdown position-absolute top-0 end-0 m-2">
+
+                            <button class="btn btn-sm btn-outline-secondary p-1 position-absolute top-0 end-0 m-2"
+                                (click)="openInvoicePdf(phase)" aria-label="Imprimer">
+                                <i class="bx bx-printer"></i>
+                            </button>
+                        </div>
+                        <div class="text-muted">{{phase.type}} <span class="dot bg-pink"></span></div>
+                        <div class="text-muted">{{ phase.description }}</div>
+                        <div class="task-footer d-flex align-items-center justify-content-between mt-3">
+                            <span class="text-muted small">{{ phase.endDate }}</span>
+                            <span class="text-muted small">{{ phase.budget | currency:'MAD':'symbol':'1.0-0':'fr-MA'
+                                }}</span>
+
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<ng-template #loadingOrError>
+    <div *ngIf="errorMessage; else loading">
+        <p class="text-danger">{{ errorMessage }}</p>
+    </div>
+    <ng-template #loading>
+        <p>Chargement du projet...</p>
+    </ng-template>
+</ng-template>
+
+
+
+<!-- Div of add or edit starts  -->
+<!-- Ajoute un div formulaire visible ou caché selon isEditMode ou une variable dédiée -->
+<div *ngIf="showPhaseForm" class="phase-form-container">
+    <button (click)="goBack()" class="btn-back">
+        ← Retour
+    </button>
+    <h3 class="form-title">{{ isEditMode ? 'Modifier une Phase' : 'Créer une Phase' }}</h3>
+
+    <ul class="breadcrumb">
+        <li>
+            <a href="/rh">Dashboard</a>
+        </li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li>
+            <a class="active" href="rh/projects">Projects</a>
+        </li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li>
+            <a class="active" href="rh/tasks">tasks</a>
+        </li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li>
+            <a>{{ isEditMode ? 'Modifier' : 'Nouveau' }}</a>
+        </li>
+
+    </ul>
+
+
+    <form #phaseForm="ngForm" (ngSubmit)="onSubmitPhase(phaseForm)" novalidate class="grid-form">
+
+        <div *ngIf="isEditMode" class="form-group full-width status-container">
+            <label class="form-label">Statut de la Phase</label>
+            <select class="form-control" [(ngModel)]="newPhase.status" name="status" required #status="ngModel"
+                [class.is-invalid]="status.invalid && status.touched">
+                <option value="" disabled selected>-- Sélectionnez un statut --</option>
+                <option value="NOT_STARTED">Not Started</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="REVIEW">Review</option>
+                <option value="COMPLETED">Completed</option>
+            </select>
+            <div *ngIf="status.invalid && status.touched" class="text-danger small">
+                Statut obligatoire.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Titre</label>
+            <input type="text" class="form-control" [(ngModel)]="newPhase.title" name="title" required #title="ngModel"
+                [class.is-invalid]="title.invalid && title.touched" />
+            <div *ngIf="title.invalid && title.touched" class="text-danger small">
+                Titre obligatoire.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Type de Phase</label>
+            <select class="form-control" [(ngModel)]="newPhase.type" name="type" required #type="ngModel"
+                [class.is-invalid]="type.invalid && type.touched">
+                <option value="" disabled selected>-- Sélectionnez un type --</option>
+                <option *ngFor="let t of phaseTypes" [value]="t">{{ t }}</option>
+            </select>
+            <div *ngIf="type.invalid && type.touched" class="text-danger small">
+                Type obligatoire.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Date de début</label>
+            <input type="date" class="form-control" [(ngModel)]="newPhase.startDate" name="startDate" required
+                #startDate="ngModel" [class.is-invalid]="startDate.invalid && startDate.touched" />
+            <div *ngIf="startDate.invalid && startDate.touched" class="text-danger small">
+                Date de début obligatoire.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Date de fin</label>
+            <input type="date" class="form-control" [(ngModel)]="newPhase.endDate" name="endDate" #endDate="ngModel"
+                required [class.is-invalid]="endDate.invalid && endDate.touched" />
+            <div *ngIf="endDate.invalid && endDate.touched" class="text-danger small">
+                <div *ngIf="endDate.errors?.['required']">La date de fin est obligatoire.</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Budget</label>
+            <input type="number" class="form-control" [(ngModel)]="newPhase.budget" name="budget" #budget="ngModel"
+                required min="1" [class.is-invalid]="budget.invalid && budget.touched" />
+            <div *ngIf="budget.invalid && budget.touched" class="text-danger small">
+                <div *ngIf="budget.errors?.['required']">Le budget est obligatoire.</div>
+                <div *ngIf="budget.errors?.['min']">Le budget doit être supérieur à 0.</div>
+            </div>
+        </div>
+
+
+
+        <div class="form-group full-width">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" [(ngModel)]="newPhase.description" name="description" required
+                #description="ngModel" [class.is-invalid]="description.invalid && description.touched"></textarea>
+            <div *ngIf="description.invalid && description.touched" class="text-danger small">
+                Description obligatoire.
+            </div>
+        </div>
+
+        <div class="form-actions full-width">
+            <button type="submit" class="btn btn-ad">
+                {{ isEditMode ? 'Modifier' : 'Créer' }}
+            </button>
+            <button type="button" class="btn btn-clos" (click)="cancelPhase()">Annuler</button>
+        </div>
+    </form>
+</div>
+
+
+
+<!-- Div Of add or edit ends  -->
+
+
+<div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true"
+    data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
+    <div class="d-flex">
+        <div class="toast-body">
+            Action réussie !
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div>

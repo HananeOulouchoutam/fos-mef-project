@@ -1,0 +1,8 @@
+#chart {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e7ecef;
+  border-radius: 10px;
+}

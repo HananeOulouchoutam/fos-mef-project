@@ -1,0 +1,150 @@
+<div class="table-data">
+    <div class="order" *ngIf="!selectedLeave">
+        <div class="head">
+            <h1>Demandes de congés</h1>
+            <div *ngIf="showSearch" class="search-bar mt-2">
+                <input type="text" class="form-control" placeholder="Rechercher un employé..." [(ngModel)]="searchTerm"
+                    (keyup.enter)="searchLeaves()" />
+            </div>
+
+            <div class="head-right">
+                <i [class]="'bx ' + (showSearch ? 'bx-x' : 'bx-search')" (click)="toggleSearchBar()"
+                    style="cursor: pointer"></i>
+                <button class="btn btn-calendar" (click)="openCalendar()">
+                    <i class="bi bi-calendar3"></i> Calendrier
+                </button>
+            </div>
+        </div>
+
+        <!-- Si la liste est vide -->
+        <div *ngIf="paginatedLeaves.length === 0" class="text-center text-muted my-4">
+            Aucun demande trouvé.
+        </div>
+        <div class="filter-status mt-2 mb-3" *ngIf="paginatedLeaves.length > 0">
+            <select id="statusFilter" [(ngModel)]="statusFilter" (change)="filterLeaves()">
+                <option value="">Tous</option>
+                <option [value]="leaveStatus.PENDING">En attente</option>
+                <option [value]="leaveStatus.APPROVED">Confirmé</option>
+                <option [value]="leaveStatus.REJECTED">Rejeté</option>
+            </select>
+        </div>
+
+        <table *ngIf="paginatedLeaves.length > 0">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>De</th>
+                    <th>À</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let demande of paginatedLeaves">
+                    <td>{{ demande.employee?.firstName }} {{ demande.employee?.lastName }}</td>
+                    <td>{{ demande.startDate }}</td>
+                    <td>{{ demande.endDate }}</td>
+
+                    <td>
+                        <span class="status" [ngClass]="{
+                            'confirm': demande.status === leaveStatus.APPROVED,
+                            'rejected': demande.status === leaveStatus.REJECTED,
+                            'pending': demande.status === leaveStatus.PENDING
+                            }">
+                            {{ getStatusLabel(demande.status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <i class="bx bx-dots-vertical-rounded" style="cursor: pointer;" (click)="openDetails(demande)">
+                        </i>
+
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <!-- Pagination starts -->
+        <div class="pagination" *ngIf="paginatedLeaves.length > 0">
+            <button class="arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+                <i class="bx bx-chevrons-left"></i>
+            </button>
+
+            <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="changePage(i + 1)"
+                class="page" [class.active]="currentPage === i + 1">
+                {{ i + 1 }}
+            </button>
+
+            <button class="arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+                <i class="bx bx-chevrons-right"></i>
+            </button>
+        </div>
+
+        <!-- Pagination ends -->
+
+        <!-- Calendar Model Starts -->
+        <div class="calendar-overlay" *ngIf="showCalendar">
+            <div class="calendar-panel" *ngIf="showCalendar">
+                <app-calendar-modal (close)="closeCalendar()"></app-calendar-modal>
+            </div>
+        </div>
+        <!-- Calendar Model ends -->
+    </div>
+
+    <!-- Detail Dev starts  -->
+    <!-- Detail Panel -->
+    <div *ngIf="selectedLeave" class="details-panel">
+        <button (click)="goBack()" class="btn-back">
+            ← Retour
+        </button>
+        <h3>Détails de la demande</h3>
+        <!-- Breadcrumb simple -->
+        <ul class="breadcrumb">
+            <li>
+                <a href="/rh">Dashboard</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a class="active" href="rh/leaves">Demandes</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a>Details</a>
+            </li>
+
+        </ul>
+        <div class="details-content">
+            <p class="mt-2"><strong>Nom:</strong> {{ selectedLeave.employee?.firstName }} {{
+                selectedLeave.employee?.lastName }}</p>
+            <p><strong>De :</strong> {{ selectedLeave?.startDate }}</p>
+            <p><strong>À :</strong> {{ selectedLeave?.endDate }}</p>
+            <p><strong>À l'étranger :</strong> {{ selectedLeave.abroad ? 'Oui' : 'Non' }}</p>
+            <p *ngIf="selectedLeave.abroad"><strong>Pays :</strong> {{ selectedLeave.country }}</p>
+            <p>
+                <strong>Motif :</strong>
+                <span class="description">{{ selectedLeave?.reason }}</span>
+            </p>
+        </div>
+
+        <div class="actions mt-2">
+            <button class="btn btn-comf me-2" (click)="confirmLeave()">Confirmer</button>
+            <button class="btn btn-rej me-2" (click)="rejectLeave()">Rejeter</button>
+        </div>
+    </div>
+
+    <!-- Detail div ends  -->
+    <div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+        aria-atomic="true" data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
+        <div class="d-flex">
+            <div class="toast-body">
+                Un email de vérification a été envoyé.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+
+
+
+</div>

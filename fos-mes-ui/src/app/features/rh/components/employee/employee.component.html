@@ -1,0 +1,316 @@
+<div class="table-data">
+    <div class="order" *ngIf="!showForm && !showDetailsDiv">
+        <div class="head">
+            <h1>
+                Nos Employés
+                <button class="btn-download" (click)="!isDownloading && downloadExcel()"
+                    [class.disabled]="isDownloading" [attr.aria-disabled]="isDownloading">
+                    <i class="bx" [ngClass]="{
+        'bxs-cloud-download': !isDownloading,
+        'bx-loader-circle bx-spin': isDownloading
+      }"></i>
+                </button>
+            </h1>
+
+
+            <div class="head-right">
+                <div *ngIf="showSearch" class="search-bar mt-2">
+                    <input type="text" class="form-control" placeholder="Rechercher un employé..."
+                        [(ngModel)]="searchTerm" (keyup.enter)="searchEmployees()" />
+                </div>
+
+                <i [class]="'bx ' + (showSearch ? 'bx-x' : 'bx-search')" (click)="toggleSearchBar()"
+                    style="cursor: pointer"></i>
+
+                <button class="btn btn-add" (click)="openForm()">
+                    <i class="bx bx-plus"></i> Ajouter
+                </button>
+            </div>
+        </div>
+
+        <!-- Si la liste est vide -->
+        <div *ngIf="employees.length === 0" class="text-center text-muted my-4">
+            Aucun employé trouvé.
+        </div>
+        <table *ngIf="employees.length > 0">
+            <thead>
+                <tr>
+                    <th>Nom Complet</th>
+                    <th>Embauché le</th>
+                    <th>Poste</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let employee of employees">
+                    <td class="fullName">
+                        <img [src]="employee.imageUrl ? getImageUrl(employee.imageUrl) : 'assets/images/default-avatar.png'"
+                            alt="Profile" />
+
+                        <p>{{ employee.firstName }} {{ employee.lastName }}</p>
+                    </td>
+                    <td>{{ employee.createdAt }}</td>
+                    <td>{{ employee.position }}</td>
+                    <td class="position-relative">
+                        <div class="dropdown">
+                            <i class="bx bx-dots-vertical-rounded" style="cursor: pointer;" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-expanded="false"></i>
+
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center"
+                                        (click)="showEmployeeDetails(employee)">
+                                        <i class='bx bx-info-circle me-2'></i>
+                                        Détails
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center"
+                                        (click)="editEmployee(employee)">
+                                        <i class='bx bx-pencil me-2'></i>
+                                        Modifier
+                                    </button>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <button class="dropdown-item d-flex align-items-center text-danger"
+                                        (click)="deleteEmployee(employee)">
+                                        <i class='bx bx-trash me-2'></i>
+                                        Supprimer
+                                    </button>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </td>
+
+
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination" *ngIf="employees.length > 0">
+            <button class="arrow" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0">
+                <i class="bx bx-chevrons-left"></i>
+            </button>
+
+            <button *ngFor="let page of pageNumbers" [class.active]="currentPage === page" class="page"
+                (click)="changePage(page)">
+                {{ page + 1 }}
+            </button>
+
+            <button class="arrow" (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
+                <i class="bx bx-chevrons-right"></i>
+            </button>
+        </div>
+
+
+
+    </div>
+
+    <!-- Add or edit Employee  div starts -->
+    <div *ngIf="showForm" class="employee-form-container  p-4 ">
+        <h5>{{ isEditMode ? 'Modifier un employé' : 'Nouvel employé' }}</h5>
+
+        <ul class="breadcrumb">
+            <li>
+                <a href="/rh">Dashboard</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a class="active" href="rh/employee">Employee</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a>{{ isEditMode ? 'Modifier' : 'Nouveau' }}</a>
+            </li>
+
+        </ul>
+
+
+        <form #form="ngForm" (ngSubmit)="submitForm(form)" novalidate>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Prénom</label>
+                    <input type="text" class="form-control" [(ngModel)]="newEmployee.firstName" name="firstName"
+                        required #firstName="ngModel" [class.is-invalid]="firstName.invalid && firstName.touched" />
+                    <div *ngIf="firstName.invalid && firstName.touched" class="text-danger small">
+                        Prénom obligatoire.
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" [(ngModel)]="newEmployee.lastName" name="lastName" required
+                        #lastName="ngModel" [class.is-invalid]="lastName.invalid && lastName.touched" />
+                    <div *ngIf="lastName.invalid && lastName.touched" class="text-danger small">
+                        Nom obligatoire.
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">CNSS</label>
+                    <input type="text" class="form-control" [(ngModel)]="newEmployee.cnss" name="cnss" required
+                        #cnss="ngModel" [class.is-invalid]="cnss.invalid && cnss.touched" />
+                    <div *ngIf="cnss.invalid && cnss.touched" class="text-danger small">
+                        CNSS obligatoire.
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" [(ngModel)]="newEmployee.email" name="email" required
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" #email="ngModel"
+                        [class.is-invalid]="email.invalid && (email.touched || email.dirty)" />
+
+                    <div *ngIf="email.invalid && (email.touched || email.dirty)" class="text-danger small">
+                        <div *ngIf="email.errors?.['required']">Email obligatoire.</div>
+                        <div *ngIf="email.errors?.['email'] || email.errors?.['pattern']">Format de l'email invalide.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Téléphone</label>
+                    <input type="text" class="form-control" [(ngModel)]="newEmployee.phoneNumber" name="phone" required
+                        pattern="^[0-9]{10}$" #phone="ngModel" [class.is-invalid]="phone.invalid && phone.touched" />
+                    <div *ngIf="phone.invalid && phone.touched" class="text-danger small">
+                        <div *ngIf="phone.errors?.['required']">Téléphone obligatoire.</div>
+                        <div *ngIf="phone.errors?.['pattern']">Numéro invalide (10 chiffres requis).</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Poste</label>
+                    <select class="form-select" [(ngModel)]="newEmployee.position" name="position" required
+                        #position="ngModel" [class.is-invalid]="position.invalid && position.touched">
+                        <option value="" disabled selected>-- Sélectionnez un poste --</option>
+                        <option *ngFor="let pos of positions" [value]="pos">
+                            {{ positionLabels[pos] }}
+                        </option>
+                    </select>
+                    <div *ngIf="position.invalid && position.touched" class="text-danger small">
+                        Poste obligatoire.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-add">
+                    {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+                </button>
+                <button type="button" class="btn btn-clos" (click)="cancelForm()">Annuler</button>
+            </div>
+        </form>
+    </div>
+    <!-- Add or edit employee div ends  -->
+
+    <!-- Employee's details  div starts  -->
+    <div *ngIf="showDetailsDiv" class="details-container">
+
+        <!-- Bouton Retour simple -->
+        <button (click)="goBack()" class="btn-back">
+            ← Retour
+        </button>
+
+        <!-- Titre -->
+        <h3 class="title">Détails de l'employé</h3>
+        <!-- Breadcrumb simple -->
+        <ul class="breadcrumb">
+            <li>
+                <a href="/rh">Dashboard</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a class="active" href="rh/employee">Employee</a>
+            </li>
+            <li><i class='bx bx-chevron-right'></i></li>
+            <li>
+                <a>Details</a>
+            </li>
+
+        </ul>
+
+        <div class="details-content">
+            <!-- Image -->
+            <div class="photo-wrapper">
+                <img *ngIf="selectedEmployeeDetails?.imageUrl; else defaultImage"
+                    [src]="getImageUrl(selectedEmployeeDetails.imageUrl)" alt="Photo Employé" class="photo" />
+                <ng-template #defaultImage>
+                    <img src="assets/default-avatar.png" alt="Photo par défaut" class="photo" />
+                </ng-template>
+            </div>
+
+            <!-- Infos -->
+            <div class="info-wrapper">
+                <h4>{{ selectedEmployeeDetails?.firstName }} {{ selectedEmployeeDetails?.lastName }}</h4>
+                <p><strong>Email :</strong> {{ selectedEmployeeDetails?.email }}</p>
+                <p><strong>Téléphone :</strong> {{ selectedEmployeeDetails?.phoneNumber }}</p>
+                <p><strong>Poste :</strong> {{ getSelectedEmployeePositionLabel() }}</p>
+                <p><strong>Embauché le :</strong> {{ selectedEmployeeDetails?.createdAt | date:'longDate' }}</p>
+            </div>
+
+            <!-- Documents -->
+            <div class="docs-wrapper">
+                <h5>Documents Professionnels</h5>
+                <ul>
+                    <li>
+                        <i class="bx bxs-file-pdf pdf-icon"></i> CNSS
+                        <a [href]="'http://localhost:8081/api/employees/cnss/cnss_' + getEmployeeFullNameLowercase() + '.pdf'"
+                            target="_blank" class="link-pdf">Voir PDF</a>
+                    </li>
+                    <li>
+                        <i class="bx bxs-file-pdf pdf-icon"></i> CIN
+                        <a [href]="'http://localhost:8081/api/employees/cin/cin_' + getEmployeeFullNameLowercase() + '.pdf'"
+                            target="_blank" class="link-pdf">Voir PDF</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+   
+    <div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+        aria-atomic="true" data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
+        <div class="d-flex">
+            <div class="toast-body">
+                Action réussie !
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <div class="toast align-items-center  border-0 position-fixed top-0 end-0 m-3" role="alert" aria-live="assertive"
+    aria-atomic="true" id="successToast" data-bs-autohide="true" data-bs-delay="3000" style="z-index: 1055;">
+    <div class="d-flex">
+        <div class="toast-body">
+            Employé ajouté avec succès !
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Close"></button>
+    </div>
+</div> -->

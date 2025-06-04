@@ -1,0 +1,22 @@
+<!-- filter.component.html -->
+<div class="filters">
+    <select (change)="onProjectChange($event)">
+        <option value="">Select Project</option>
+        <option value="project1">Project 1</option>
+        <option value="project2">Project 2</option>
+    </select>
+
+    <select (change)="onManagerChange($event)">
+        <option value="">Select Manager</option>
+        <option value="manager1">Manager 1</option>
+        <option value="manager2">Manager 2</option>
+    </select>
+
+    <select (change)="onStatusChange($event)">
+        <option value="">Select Status</option>
+        <option value="completed">Completed</option>
+        <option value="ongoing">Ongoing</option>
+        <option value="delayed">Delayed</option>
+    </select>
+
+</div>

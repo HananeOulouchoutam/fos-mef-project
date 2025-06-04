@@ -1,0 +1,52 @@
+<div class="project-summary">
+  <div class="header">
+    <h4>Projets</h4>
+    <!-- <div class="filters">
+      <select id="project-filter">
+        <option>Projet</option>
+        <option>Projet 1</option>
+        <option>Projet 2</option>
+      </select>
+
+      <select id="manager-filter">
+        <option>Chef de projet</option>
+        <option>Om Prakash Sao</option>
+        <option>Neilsan Mando</option>
+      </select>
+
+      <select id="status-filter">
+        <option>Statut</option>
+        <option>Terminé</option>
+        <option>Retardé</option>
+        <option>En cours</option>
+        <option>À risque</option>
+      </select>
+    </div> -->
+  </div>
+
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>Projet</th>
+        <th>Chef de projet</th>
+        <th>Durée</th>
+        <th>Statut</th>
+        <th>Progression</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let project of projects">
+        <td>{{ project.title }}</td>
+
+        <td>{{ getProjectManagerName(project) }}</td>
+
+        <td>{{ project.duration}} M</td>
+        <td>
+          <span [ngClass]="getStatusClass(project.progress)">{{ getDisplayStatus(project.progress) }}</span>
+        </td>
+
+        <td>{{ project.progress}}%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

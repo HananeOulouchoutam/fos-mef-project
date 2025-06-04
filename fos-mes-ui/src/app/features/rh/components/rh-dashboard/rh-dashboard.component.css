@@ -1,0 +1,146 @@
+/* dashboard.component.css */
+
+h1 {
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--blue);
+}
+
+a {
+  text-decoration: none;
+}
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: stretch;
+}
+
+.projects-cont {
+  display: flex;
+  gap: 10px;
+}
+
+.projects-cont app-project-summary {
+  flex: 3; /* Prend 2 parts */
+}
+
+.projects-cont app-overall-progress {
+  flex: 1; /* Prend 1 part */
+}
+
+.overview-card {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 6px;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.overview-card .icon-con {
+  font-size: 30px;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+.bg-revenus {
+  color: #33cccc;
+  background-color: rgba(51, 204, 204, 0.3);
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.bg-projets {
+  color: #006699 !important;
+  background-color: rgba(0, 102, 153, 0.3) !important;
+  padding: 8px;
+  border-radius: 50%;
+}
+
+.bg-ressources {
+  /* background-color: #ff9800; */
+  color: #ff6600;
+  background-color: rgba(255, 102, 0, 0.3);
+  padding: 8px;
+  border-radius: 50%;
+  /* color: white; */
+}
+
+.overview-card h2 {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(39, 69, 106, 0.3);
+}
+
+.overview-card p {
+  font-size: 22px;
+  color: #555;
+  margin-top: 5px;
+}
+
+.overview-card small {
+  font-size: 12px;
+  color: #999;
+  text-align: start;
+}
+
+.overview-card span {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.overview-card .positive {
+  /* color: green; */
+  color: #00a651;
+}
+
+.overview-card .negative {
+  /* color: red; */
+  color: #cc3333;
+}
+
+.projects-status {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0 0.5rem 0;
+}
+
+.projects-status .left {
+  text-align: left;
+}
+
+.projects-status .right {
+  text-align: right;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  grid-gap: 16px;
+  margin-bottom: 1rem;
+}
+
+.breadcrumb li {
+  color: var(--dark);
+}
+.breadcrumb li a {
+  color: var(--dark-grey);
+  pointer-events: none;
+}
+.breadcrumb li a.active {
+  color: var(--blue);
+  pointer-events: unset;
+}

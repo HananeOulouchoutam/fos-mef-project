@@ -1,0 +1,94 @@
+<div class="main">
+    <div class="head-title">
+        <div class="left">
+            <h1>Tableau de bord</h1>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li><i class='bx bx-chevron-right'></i></li>
+                <li>
+                    <a class="active" href="/rh">Home</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="dashboard">
+        <div class="overview-cards">
+            <!-- Revenus -->
+            <div class="overview-card">
+                <div class="icon-con">
+                    <i class="{{ icons.revenue }}" [ngClass]="'bg-revenus'"></i>
+                </div>
+                <h2>Revenus</h2>
+                <p>{{ totalRevenue | currency:'MAD':'symbol':'1.0-0':'fr-MA' }}</p>
+                <p class="projects-status">
+                    <span class="left">Payés : {{ paidBudget }}</span>
+                    <span class="right">Non payés : {{ unpaidBudget }}</span>
+                </p>
+                <small>
+                    <span [ngClass]="{
+          positive: percentageChangeRevenue.includes('+'),
+          negative: percentageChangeRevenue.includes('-')
+        }">
+                        {{ percentageChangeRevenue }}
+                    </span>
+                    par rapport à l’année dernière
+                </small>
+            </div>
+
+            <!-- Projets -->
+            <div class="overview-card">
+                <div class="icon-con">
+                    <i class="{{ icons.projects }}" [ngClass]="'bg-projets'"></i>
+                </div>
+                <h2>Projets</h2>
+                <p>{{ projectscount }}</p>
+
+                <!-- Nouvel affichage -->
+                <p class="projects-status">
+                    <span class="left">Payés : {{ paidProjectsCount }}</span>
+                    <span class="right">Non payés : {{ unpaidProjectsCount }}</span>
+                </p>
+
+                <small>
+                    <span [ngClass]="{
+        positive: percentageChangeProjects.includes('+'),
+        negative: percentageChangeProjects.includes('-')
+      }">
+                        {{ percentageChangeProjects }}
+                    </span>
+                    par rapport à l’année dernière
+                </small>
+            </div>
+
+
+            <!-- Ressources -->
+            <div class="overview-card">
+                <div class="icon-con">
+                    <i class="{{ icons.resources }}" [ngClass]="'bg-ressources'"></i>
+                </div>
+                <h2>Ressources</h2>
+                <p>{{ resources }}</p>
+                <small>
+                    <span [ngClass]="{
+          positive: percentageChangeResources.includes('+'),
+          negative: percentageChangeResources.includes('-')
+        }">
+                        {{ percentageChangeResources }}
+                    </span>
+                    par rapport à l’année dernière
+                </small>
+            </div>
+        </div>
+
+        <div class="projects-cont">
+            <app-project-summary [projects]="projects"></app-project-summary>
+
+            <app-overall-progress [series]="series" [labels]="labels"></app-overall-progress>
+
+        </div>
+        <!-- <app-line-chart [chartData]="monthlySalesData" [chartCategories]="months">
+        </app-line-chart> -->
+    </div>
+</div>

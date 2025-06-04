@@ -1,0 +1,249 @@
+<div class="container py-4">
+    <div *ngIf="!isProjectFormVisible">
+        <div class="d-flex flex-column gap-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Nos Projets
+                    <button class="btn-download" (click)="!isDownloading && downloadExcel()"
+                        [class.disabled]="isDownloading" [attr.aria-disabled]="isDownloading">
+                        <i class="bx" [ngClass]="{
+        'bxs-cloud-download': !isDownloading,
+        'bx-loader-circle bx-spin': isDownloading
+      }"></i>
+                    </button>
+                </h1>
+                <p class="text-muted small">{{ today | date: 'd MMMM y' }}</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="projects-section-line d-flex  gap-4">
+                    <div class="item-status text-start">
+                        <span class="status-number d-block fw-bold fs-4">{{ inProgressProjects }}</span>
+                        <span class="status-type text-muted small">En cours</span>
+                    </div>
+                    <div class="item-status text-start">
+                        <span class="status-number d-block fw-bold fs-4">{{ completedProjects }}</span>
+                        <span class="status-type text-muted small">Complété</span>
+                    </div>
+                    <div class="item-status text-start">
+                        <span class="status-number d-block fw-bold fs-4">{{ totalProjects }}</span>
+                        <span class="status-type text-muted small">Projets totaux</span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm view-btn" [ngClass]="{'active': !isGridView}" title="Vue en liste"
+                        (click)="switchToListView()">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <button class="btn btn-sm view-btn" [ngClass]="{'active': isGridView}" title="Vue en grille"
+                        (click)="switchToGridView()">
+                        <i class="bi bi-grid"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <div class="search-pagination-wrapper">
+
+            <!-- 🔍 Barre de recherche -->
+            <div class="search-bar" (click)="inputSearch.focus()">
+                <i class="bx bx-search"></i>
+                <input #inputSearch type="text" placeholder="Rechercher..." [(ngModel)]="searchQuery"
+                    (input)="onSearchChange()" />
+            </div>
+
+
+
+
+            <!-- 📄 Pagination -->
+            <div class="pagination-controls">
+                <button (click)="previousPage()" [disabled]="currentPage === 0">
+                    <i class="bx bx-chevron-left"></i>
+                </button>
+
+                <span>Page {{ currentPage + 1 }} sur {{ totalPages }}</span>
+
+                <button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+                    <i class="bx bx-chevron-right"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <div [ngClass]="{'row g-4': isGridView, 'list-view': !isGridView}" id="projectsContainer">
+            <div *ngFor="let project of projects" class="col-md-6 col-lg-4 card-container">
+                <div class="card shadow-sm rounded-4 position-relative">
+                    <!-- Trois points parfaitement dans le coin top-right -->
+                    <div class="dropdown position-absolute" style="top: -8px; right: -8px;">
+                        <i class='bx bx-pencil fs-5  rounded-circle p-1 shadow-sm cursor-pointer'
+                            data-bs-toggle="dropdown" (click)="$event.stopPropagation()"></i>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#"
+                                    (click)="editProject(project); $event.preventDefault(); $event.stopPropagation()">Modifier</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#"
+                                    (click)="deleteProject(project.id); $event.preventDefault(); $event.stopPropagation()">
+                                    Supprimer
+                                </a>
+
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contenu cliquable de la carte -->
+                    <a [routerLink]="['/rh/projects/tasks', project.id]" class="text-decoration-none text-dark d-block">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2 mt-4">
+                                <small class="text-muted">Durée : {{ project.duration }} mois</small>
+                                <span class="fw-medium text-dark">{{ project.status }}</span>
+                            </div>
+                            <h5 class="card-title">{{ project.title }}</h5>
+                            <p class="card-text text-muted small">{{ project.description }}</p>
+                            <div class="mb-2">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" role="progressbar"
+                                        [style.width]="project.progress + '%'" aria-valuenow="50" aria-valuemin="0"
+                                        aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ project.progress }}% complété</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <!-- Client image -->
+                                <img *ngIf="project.client"
+                                    [src]="project.client.imageUrl ? getClientImageUrl(project.client.imageUrl) : 'assets/default-avatar.png'"
+                                    alt="Client" class="rounded-circle border border-white me-n2" width="32"
+                                    height="32">
+
+                                <!-- Up to 2 team members -->
+                                <ng-container *ngFor="let member of project.team.slice(0, 2)">
+                                    <img [src]="member.imageUrl ? getImageUrl(member.imageUrl) : 'assets/default-avatar.png'"
+                                        class="rounded-circle border border-white me-n2" width="32" height="32"
+                                        alt="Membre de l'équipe">
+                                </ng-container>
+
+                                <!-- "+" button -->
+                                <button class="btn btn-sm btn-light rounded-circle border border-white ms-2"
+                                    style="width: 32px; height: 32px;">+</button>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+        <button class="btn shadow-lg fab btn-add" title="Créer un projet" (click)="createProject()">
+            <i class="bi bi-plus-lg fs-4 "></i>
+        </button>
+    </div>
+
+    <div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+        aria-atomic="true" data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
+        <div class="d-flex">
+            <div class="toast-body">
+                Action réussie !
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+
+</div>
+
+
+<div *ngIf="isProjectFormVisible" class="project-form-container">
+    <button (click)="goBack()" class="btn-back">
+        ← Retour
+    </button>
+    <h3>{{ isEditMode ? 'Modifier le projet' : 'Nouveau projet' }}</h3>
+    <ul class="breadcrumb">
+        <li><a href="/rh">Dashboard</a></li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li><a class="active" href="rh/projects">Projets</a></li>
+        <li><i class='bx bx-chevron-right'></i></li>
+        <li><a>{{ isEditMode ? 'Modifier' : 'Nouveau' }}</a></li>
+    </ul>
+
+    <form #projectForm="ngForm" (ngSubmit)="submitProjectForm(projectForm)" novalidate>
+
+        <div class="input-wrapper">
+            <label for="title">Titre du projet</label>
+            <input id="title" type="text" [(ngModel)]="newProject.title" name="title" required #title="ngModel"
+                [class.is-invalid]="title.invalid && (title.touched || projectForm.submitted)"
+                placeholder="Titre du projet" />
+            <div *ngIf="title.invalid && (title.touched || projectForm.submitted)" class="text-danger small mt-1">
+                Titre obligatoire.
+            </div>
+        </div>
+
+
+
+        <!-- Date de début -->
+        <div class="input-wrapper">
+            <label for="startDate">Date de début</label>
+            <input id="startDate" type="date" [(ngModel)]="newProject.startDate" name="startDate" required
+                #startDate="ngModel"
+                [class.is-invalid]="startDate.invalid && (startDate.touched || projectForm.submitted)" />
+            <div *ngIf="startDate.invalid && (startDate.touched || projectForm.submitted)"
+                class="text-danger small mt-1">
+                Date de début obligatoire.
+            </div>
+        </div>
+
+        <!-- Durée -->
+        <div class="input-wrapper">
+            <label for="duration">Durée (mois)</label>
+            <input id="duration" type="number" [(ngModel)]="newProject.duration" name="duration" min="1" required
+                #duration="ngModel" [class.is-invalid]="duration.invalid && (duration.touched || projectForm.submitted)"
+                placeholder="Durée (jours)" />
+            <div *ngIf="duration.invalid && (duration.touched || projectForm.submitted)" class="text-danger small mt-1">
+                Durée obligatoire.
+            </div>
+        </div>
+
+
+        <div class="input-wrapper">
+            <label for="clientId">Client</label>
+            <select id="clientId" [(ngModel)]="newProject.clientId" name="clientId" required #clientId="ngModel"
+                [class.is-invalid]="clientId.invalid && (clientId.touched || projectForm.submitted)">
+                <option value="" disabled selected>-- Sélectionnez un client --</option>
+                <option *ngFor="let client of clients" [value]="client.id">
+                    {{ client.firstName }} {{ client.lastName }}
+                </option>
+            </select>
+
+            <div *ngIf="clientId.invalid && (clientId.touched || projectForm.submitted)" class="text-danger small mt-1">
+                Client obligatoire.
+            </div>
+        </div>
+
+        <fieldset [class.is-invalid]="newProject.employeeIds.length === 0 && (projectForm.submitted)">
+            <legend>Employés assignés</legend>
+            <div>
+                <label *ngFor="let emp of employees" [attr.for]="'emp-' + emp.id" style="display: block;">
+                    <input type="checkbox" [id]="'emp-' + emp.id" [value]="emp.id"
+                        [checked]="newProject.employeeIds.includes(emp.id)"
+                        (change)="toggleEmployeeSelection(emp.id)" />
+                    {{ emp.firstName }} {{ emp.lastName }}
+                    <span *ngIf="emp.position === 'PROJECT_MANAGER'" class="project-manager">(Chef de Projet)</span>
+                </label>
+            </div>
+
+
+
+        </fieldset>
+
+
+
+        <div class="button-group mt-3">
+            <button type="submit" class="btn btn-add">
+                {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+            </button>
+            <button type="button" class="btn btn-clos" (click)="isProjectFormVisible = false">Annuler</button>
+        </div>
+    </form>
+
+</div>
