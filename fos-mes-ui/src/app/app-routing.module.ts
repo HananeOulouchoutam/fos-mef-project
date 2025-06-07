@@ -10,6 +10,7 @@ import { EditProfilComponent } from './features/rh/components/edit-profil/edit-p
 import { TaskComponent } from './features/rh/components/task/task.component';
 import { ClientsComponent } from './features/rh/components/clients/clients.component';
 import { AuthGuard } from './guards/auth.guard';
+import { SettingsComponent } from './features/rh/components/settings/settings.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
       { path: 'projects/tasks/:id', component: TaskComponent },
       { path: 'edit-profil', component: EditProfilComponent },
       { path: 'clients', component: ClientsComponent },
+      { path: 'parameters', component: SettingsComponent },
     ],
     canActivate: [AuthGuard],
     data: { roles: ['RH'] },

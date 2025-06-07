@@ -278,4 +278,8 @@ export class ClientsComponent implements OnInit, AfterViewInit {
       this.selectedClient.lastName
     ).toLowerCase();
   }
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/default-avatar.png';
+  }
 }

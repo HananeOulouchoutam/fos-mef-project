@@ -29,6 +29,7 @@ import { ProjectsComponent } from './features/rh/components/projects/projects.co
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { LineChartComponent } from './features/rh/components/line-chart/line-chart.component';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+import { SettingsComponent } from './features/rh/components/settings/settings.component';
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -64,6 +65,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
     ClientsComponent,
     ProjectsComponent,
     LineChartComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,

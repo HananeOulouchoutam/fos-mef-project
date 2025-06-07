@@ -14,16 +14,16 @@
 
             <div class="head-right">
                 <div *ngIf="showSearch" class="search-bar mt-2">
-                <input type="text" class="form-control" placeholder="Rechercher un employé..." [(ngModel)]="searchTerm"
-                    (keyup.enter)="searchEmployees()" />
-            </div>
+                    <input type="text" class="form-control" placeholder="Rechercher un employé..."
+                        [(ngModel)]="searchTerm" (keyup.enter)="searchEmployees()" />
+                </div>
 
-            <i [class]="'bx ' + (showSearch ? 'bx-x' : 'bx-search')" (click)="toggleSearchBar()"
-                style="cursor: pointer"></i>
+                <i [class]="'bx ' + (showSearch ? 'bx-x' : 'bx-search')" (click)="toggleSearchBar()"
+                    style="cursor: pointer"></i>
 
-            <button class="btn btn-add" (click)="openForm()">
-                <i class="bx bx-plus"></i> Ajouter
-            </button>
+                <button class="btn btn-add" (click)="openForm()">
+                    <i class="bx bx-plus"></i> Ajouter
+                </button>
             </div>
         </div>
 
@@ -45,8 +45,7 @@
             <tbody>
                 <tr *ngFor="let client of clients">
                     <td class="fullName">
-                        <img [src]="client.imageUrl ? getImageUrl(client.imageUrl) : 'assets/images/default-avatar.png'"
-                            alt="Profile" />
+                        <img [src]="getImageUrl(client.imageUrl)" (error)="onImageError($event)" alt="Profile" />
                         <p>{{ client.firstName }} {{ client.lastName }}</p>
                     </td>
                     <td>{{ client.email }}</td>
@@ -224,11 +223,9 @@
         <div class="details-content">
             <!-- Image -->
             <div class="photo-wrapper">
-                <img *ngIf="selectedClient.imageUrl; else defaultClientImage"
-                    [src]="getImageUrl(selectedClient.imageUrl)" alt="Photo Client" class="photo" />
-                <ng-template #defaultClientImage>
-                    <img src="assets/default-avatar.png" alt="Photo par défaut" class="photo" />
-                </ng-template>
+                <img [src]="getImageUrl(selectedClient.imageUrl)" (error)="onImageError($event)" alt="Photo Client"
+                    class="photo" />
+
             </div>
 
             <!-- Infos -->

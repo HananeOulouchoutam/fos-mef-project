@@ -1,0 +1,21 @@
+.container {
+  text-align: center;
+  padding: 50px;
+  font-family: Arial, sans-serif;
+  color: #444;
+}
+
+.image {
+  width: 200px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.2em;
+  color: #777;
+}

@@ -306,4 +306,8 @@ export class EmployeeComponent implements OnInit, AfterViewInit {
       toast.show();
     }
   }
+  onImageError(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/default-avatar.png';
+  }
 }

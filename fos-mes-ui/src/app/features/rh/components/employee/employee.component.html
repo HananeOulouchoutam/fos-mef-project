@@ -45,7 +45,8 @@
                 <tr *ngFor="let employee of employees">
                     <td class="fullName">
                         <img [src]="employee.imageUrl ? getImageUrl(employee.imageUrl) : 'assets/images/default-avatar.png'"
-                            alt="Profile" />
+                            (error)="onImageError($event)" alt="Profile" />
+
 
                         <p>{{ employee.firstName }} {{ employee.lastName }}</p>
                     </td>
@@ -236,11 +237,9 @@
         <div class="details-content">
             <!-- Image -->
             <div class="photo-wrapper">
-                <img *ngIf="selectedEmployeeDetails?.imageUrl; else defaultImage"
-                    [src]="getImageUrl(selectedEmployeeDetails.imageUrl)" alt="Photo Employé" class="photo" />
-                <ng-template #defaultImage>
-                    <img src="assets/default-avatar.png" alt="Photo par défaut" class="photo" />
-                </ng-template>
+                <img [src]="getImageUrl(selectedEmployeeDetails?.imageUrl)" (error)="onImageError($event)"
+                    alt="Photo Employé" class="photo" />
+
             </div>
 
             <!-- Infos -->
@@ -272,7 +271,7 @@
         </div>
     </div>
 
-   
+
     <div id="successToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
         aria-atomic="true" data-bs-delay="3000" style="position: fixed; top: 1rem; right: 1rem; z-index: 1055;">
         <div class="d-flex">
